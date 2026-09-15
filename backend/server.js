@@ -5,9 +5,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
+const taskRoutes = require('./routes/tasks');
+const adminRoutes = require('./routes/admin');
 require('dotenv').config();
 
 const app = express();
+//Enable CORS for all routes
+const allowedOrigins = [' http://localhost:5173', 'https://task-managenment-application.onrender.com/'];
 
 // middleware
 app.use(cors());
@@ -25,6 +29,8 @@ app.get('/', (req, res) => {
 );
 
 app.use('/api/auth', authRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/admin', adminRoutes);
 
 // start the server
 const PORT = process.env.PORT || 5000;

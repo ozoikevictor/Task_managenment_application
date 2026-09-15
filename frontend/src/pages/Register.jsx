@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
-function Register() {
-  const navigate = useNavigate();
+export default function Register() {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -15,11 +16,14 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
       await api.post("/api/auth/register", formData);
-      navigate("/login");
+      setSuccess("Account created successfully. Redirecting you to login...");
+      setFormData({ name: "", email: "", password: "" });
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
@@ -28,75 +32,72 @@ function Register() {
   };
 
   return (
-    <div className="auth-page d-flex align-items-center">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-11 col-sm-8 col-md-6 col-lg-4">
-            <div className="card border-0 shadow-lg auth-card">
-              <div className="card-body p-4 p-md-5">
-                <div className="text-center mb-4">
-                  <span className="brand-badge brand-badge-lg mx-auto mb-3">TM</span>
-                  <h3 className="fw-semibold mb-1">Create your account</h3>
-                  <p className="text-secondary small mb-0">Start organizing your tasks today</p>
-                </div>
-
-                {error && <div className="alert alert-danger py-2 small">{error}</div>}
-
-                <form onSubmit={handleSubmit}>
-                  <div className="mb-3">
-                    <label className="form-label small fw-medium">Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      className="form-control"
-                      placeholder="Jane Doe"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label small fw-medium">Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      className="form-control"
-                      placeholder="you@example.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="form-label small fw-medium">Password</label>
-                    <input
-                      type="password"
-                      name="password"
-                      className="form-control"
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <button type="submit" className="btn btn-primary w-100 py-2" disabled={loading}>
-                    {loading ? "Creating account..." : "Register"}
-                  </button>
-                </form>
-
-                <p className="text-center small text-secondary mt-4 mb-0">
-                  Already have an account? <Link to="/login">Login</Link>
-                </p>
-              </div>
-            </div>
+    <div className="d-flex align-items-center justify-content-center" style={{ minHeight: "calc(100vh - 64px)", background: "#f4f5fb" }}>
+      <div className="card border-0 shadow-sm p-4 p-md-5" style={{ width: "100%", maxWidth: "420px", borderRadius: "16px" }}>
+        <div className="text-center mb-4">
+          <div
+            className="d-inline-flex align-items-center justify-content-center text-white fw-bold mb-3"
+            style={{ width: 48, height: 48, borderRadius: 12, background: "#4f46e5" }}
+          >
+            TM
           </div>
+          <h4 className="fw-bold mb-1">Create your account</h4>
+          <p className="text-muted small mb-0">Start organizing your tasks today</p>
         </div>
+
+        {error && <div className="alert alert-danger py-2 small">{error}</div>}
+        {success && <div className="alert alert-success py-2 small">{success}</div>}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label small fw-semibold">Name</label>
+            <input
+              type="text"
+              name="name"
+              className="form-control"
+              placeholder="Jane Doe"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label small fw-semibold">Email</label>
+            <input
+              type="email"
+              name="email"
+              className="form-control"
+              placeholder="you@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="form-label small fw-semibold">Password</label>
+            <input
+              type="password"
+              name="password"
+              className="form-control"
+              placeholder="At least 6 characters"
+              value={formData.password}
+              onChange={handleChange}
+              minLength={6}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary w-100 py-2 fw-semibold" disabled={loading || success}>
+            {loading ? "Creating account..." : "Register"}
+          </button>
+        </form>
+
+        <p className="text-center text-muted small mt-4 mb-0">
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
       </div>
     </div>
   );
 }
-
-export default Register;

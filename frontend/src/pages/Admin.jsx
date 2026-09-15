@@ -11,8 +11,8 @@ function Admin() {
     const fetchAdminData = async () => {
       try {
         const [statsRes, tasksRes] = await Promise.all([
-          api.get("/admin/stats"),
-          api.get("/admin/tasks"),
+          api.get("/api/admin/stats"),
+          api.get("/api/admin/tasks"),
         ]);
         setStats(statsRes.data);
         setTasks(tasksRes.data);

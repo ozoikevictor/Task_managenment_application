@@ -23,7 +23,7 @@ function Dashboard() {
 
   const fetchTasks = async () => {
     try {
-      const res = await api.get("/tasks");
+      const res = await api.get("/api/tasks");
       // Guard against the API returning something other than a plain array
       setTasks(Array.isArray(res.data) ? res.data : res.data?.tasks || []);
     } catch (err) {
@@ -42,7 +42,7 @@ function Dashboard() {
     if (!title.trim()) return;
 
     try {
-      const res = await api.post("/tasks", { title, description });
+      const res = await api.post("/api/tasks", { title, description });
       setTasks([res.data, ...tasks]);
       setTitle("");
       setDescription("");
@@ -53,7 +53,7 @@ function Dashboard() {
 
   const handleComplete = async (id) => {
     try {
-      const res = await api.put(`/tasks/${id}`, { status: "completed" });
+      const res = await api.put(`/api/tasks/${id}`, { status: "completed" });
       setTasks(tasks.map((t) => (t._id === id ? res.data : t)));
     } catch (err) {
       setError("Could not update task.");
@@ -62,7 +62,7 @@ function Dashboard() {
 
   const handleDelete = async (id) => {
     try {
-      await api.delete(`/tasks/${id}`);
+      await api.delete(`/api/tasks/${id}`);
       setTasks(tasks.filter((t) => t._id !== id));
     } catch (err) {
       setError("Could not delete task.");
